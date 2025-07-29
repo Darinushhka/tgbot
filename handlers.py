@@ -1,15 +1,16 @@
 import os
 import tempfile
+from time import time
+
 from aiogram import types, F
 from aiogram.types import FSInputFile
 from aiogram.filters import CommandStart
 from aiogram.utils.chat_action import ChatActionSender
-from aiogram.dispatcher.middlewares.base import BaseMiddleware
-from time import time
+
 from config import MAX_FILE_SIZE, COMPRESSED_DIR
 from services.video_service import compress_video_ffmpeg
 
-RATE_LIMIT_SECONDS = 30
+RATE_LIMIT_SECONDS = 60
 last_request_time = {}
 
 def register_handlers(dp, bot):
@@ -24,11 +25,9 @@ def register_handlers(dp, bot):
         user_id = message.from_user.id
         now = time()
 
-    
         if user_id in last_request_time and now - last_request_time[user_id] < RATE_LIMIT_SECONDS:
             await message.answer("⏳ Please wait a bit before sending another video.")
             return
-
         last_request_time[user_id] = now
 
         video_file = message.video or message.document
@@ -40,7 +39,9 @@ def register_handlers(dp, bot):
         file_info = await bot.get_file(video_file.file_id)
         file_data = await bot.download_file(file_info.file_path)
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4", dir="/tmp") as input_tmp:
+        temp_dir = tempfile.gettempdir()
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4", dir=temp_dir) as input_tmp:
             input_tmp.write(file_data.read())
             input_path = input_tmp.name
 
