@@ -8,9 +8,8 @@ from dotenv import load_dotenv
 
 from handlers import register_handlers
 
-
+load_dotenv()
 async def start_bot():
-    load_dotenv()
     token = os.getenv("BOT_TOKEN")
 
     if not token:
