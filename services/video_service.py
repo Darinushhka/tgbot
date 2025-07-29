@@ -3,6 +3,7 @@ from asyncio import Semaphore
 
 semaphore = Semaphore(2)  
 
+
 async def compress_video_ffmpeg(input_path: str, output_path: str):
     async with semaphore:
         command = [
