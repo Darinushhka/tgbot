@@ -9,7 +9,6 @@ from time import time
 from config import MAX_FILE_SIZE, COMPRESSED_DIR
 from services.video_service import compress_video_ffmpeg
 
-
 RATE_LIMIT_SECONDS = 30
 last_request_time = {}
 
